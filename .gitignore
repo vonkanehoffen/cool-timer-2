@@ -5,6 +5,7 @@
 *.translation
 
 # Export (keep docs/ web sandbox for GitHub Pages)
+docs/*.import
 export/
 *.apk
 *.aab

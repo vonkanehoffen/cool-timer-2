@@ -24,18 +24,11 @@ The sandbox reuses `scenes/animations/gem.tscn` and the shared `GemsBin` physics
 
 ### Open on your phone (web build)
 
-Pre-built HTML5 export lives in **`docs/`** for GitHub Pages.
+The **`docs/`** folder is a **bare animation-only** HTML5 export: fullscreen black canvas, tap to drop gems, no timer UI, no Godot splash/progress chrome (minimal custom shell).
 
-**Live URL (after Pages is enabled):** [https://vonkanehoffen.github.io/cool-timer-2/](https://vonkanehoffen.github.io/cool-timer-2/)
+**Live URL:** [https://vonkanehoffen.github.io/cool-timer-2/](https://vonkanehoffen.github.io/cool-timer-2/)
 
-**One-time GitHub Pages setup:**
-
-1. Repo **Settings → Pages**
-2. **Build and deployment → Source:** Deploy from a branch
-3. **Branch:** `main` (or your default branch), folder **`/docs`**
-4. Save — GitHub publishes `docs/index.html` + wasm/js/pck at the URL above
-
-Open that URL on your phone, tap the canvas if needed to focus, then tap to drop gems.
+GitHub Pages should serve from branch **`main`**, folder **`/docs`**. Tap anywhere to spawn a gem.
 
 ### Re-export the web sandbox
 

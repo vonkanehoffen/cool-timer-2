@@ -12,12 +12,20 @@ const DEFAULT_MAX_GEMS := 100
 @onready var left_wall: StaticBody2D = %LeftWall
 @onready var right_wall: StaticBody2D = %RightWall
 
-var max_gems: int = DEFAULT_MAX_GEMS
+@export var max_gems: int = DEFAULT_MAX_GEMS
+@export var edge_margin: float = 24.0
+@export var show_outline: bool = true
+@export var use_full_viewport: bool = false
+
 var _rng := RandomNumberGenerator.new()
 
 
 func _ready() -> void:
 	_rng.randomize()
+	if bin_outline != null:
+		bin_outline.visible = show_outline
+		if not show_outline:
+			bin_outline.border_width = 0.0
 	_ensure_collision_shapes()
 	_update_bin_layout()
 
@@ -32,7 +40,9 @@ func get_gem_count() -> int:
 
 
 func get_bin_rect() -> Rect2:
-	var margin := Vector2(24, 24)
+	if use_full_viewport:
+		return Rect2(Vector2.ZERO, size)
+	var margin := Vector2(edge_margin, edge_margin)
 	var rect := Rect2(margin, size - margin * 2.0)
 	rect.size.y = minf(rect.size.y, rect.size.x * 1.2)
 	return rect
@@ -59,10 +69,10 @@ func _spawn_gem(spawn_x: float, bin_rect: Rect2) -> void:
 	_enforce_cap()
 	var gem: RigidBody2D = GEM_SCENE.instantiate()
 	gems_container.add_child(gem)
-	gem.position = Vector2(
-		spawn_x,
-		bin_rect.position.y - 20.0 - _rng.randf_range(0.0, 80.0)
-	)
+	var spawn_y := bin_rect.position.y - 20.0 - _rng.randf_range(0.0, 80.0)
+	if use_full_viewport:
+		spawn_y = minf(spawn_y, -16.0 - _rng.randf_range(0.0, 40.0))
+	gem.position = Vector2(spawn_x, spawn_y)
 	gem.apply_central_impulse(Vector2(_rng.randf_range(-40.0, 40.0), _rng.randf_range(20.0, 120.0)))
 	gem.angular_velocity = _rng.randf_range(-4.0, 4.0)
 	if gem.has_method("randomize_appearance"):

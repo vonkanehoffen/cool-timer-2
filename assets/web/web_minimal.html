@@ -58,7 +58,7 @@ html, body {
 	text-align: center;
 }
 		</style>
-		
+		$GODOT_HEAD_INCLUDE
 	</head>
 	<body>
 		<canvas id="canvas"></canvas>
@@ -68,15 +68,15 @@ html, body {
 		</noscript>
 
 		<div id="status">
-			<img id="status-splash" src="" alt="">
+			<img id="status-splash" src="$GODOT_SPLASH" alt="">
 			<progress id="status-progress"></progress>
 			<div id="status-notice"></div>
 		</div>
 
-		<script src="index.js"></script>
+		<script src="$GODOT_URL"></script>
 		<script>
-const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"ensureCrossOriginIsolationHeaders":true,"executable":"index","experimentalVK":false,"fileSizes":{"index.pck":14368,"index.wasm":35376909},"focusCanvas":true,"gdextensionLibs":[]};
-const GODOT_THREADS_ENABLED = false;
+const GODOT_CONFIG = $GODOT_CONFIG;
+const GODOT_THREADS_ENABLED = $GODOT_THREADS_ENABLED;
 const engine = new Engine(GODOT_CONFIG);
 
 (function () {
@@ -142,4 +142,3 @@ const engine = new Engine(GODOT_CONFIG);
 		</script>
 	</body>
 </html>
-
