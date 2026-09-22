@@ -21,12 +21,24 @@ var _rng := RandomNumberGenerator.new()
 
 
 func _ready() -> void:
+	mouse_filter = Control.MOUSE_FILTER_IGNORE
 	_rng.randomize()
 	if bin_outline != null:
 		bin_outline.visible = show_outline
+		bin_outline.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		if not show_outline:
 			bin_outline.border_width = 0.0
 	_ensure_collision_shapes()
+	ensure_layout_ready()
+
+
+func ensure_layout_ready() -> void:
+	if size.x <= 1.0 or size.y <= 1.0:
+		var parent_control := get_parent_control()
+		if parent_control != null and parent_control.size.x > 1.0:
+			size = parent_control.size
+		else:
+			size = get_viewport_rect().size
 	_update_bin_layout()
 
 
@@ -40,8 +52,11 @@ func get_gem_count() -> int:
 
 
 func get_bin_rect() -> Rect2:
+	var area := size
+	if area.x <= 1.0 or area.y <= 1.0:
+		area = get_viewport_rect().size
 	if use_full_viewport:
-		return Rect2(Vector2.ZERO, size)
+		return Rect2(Vector2.ZERO, area)
 	var margin := Vector2(edge_margin, edge_margin)
 	var rect := Rect2(margin, size - margin * 2.0)
 	rect.size.y = minf(rect.size.y, rect.size.x * 1.2)
@@ -49,17 +64,20 @@ func get_bin_rect() -> Rect2:
 
 
 func spawn_at_viewport_position(viewport_pos: Vector2) -> void:
+	ensure_layout_ready()
 	var local_x := make_canvas_position_local(viewport_pos).x
 	spawn_at_canvas_x(local_x)
 
 
 func spawn_at_canvas_x(canvas_x: float) -> void:
+	ensure_layout_ready()
 	var rect := get_bin_rect()
 	var spawn_x := clampf(canvas_x, rect.position.x + 18.0, rect.position.x + rect.size.x - 18.0)
 	_spawn_gem(spawn_x, rect)
 
 
 func spawn_random_in_bin() -> void:
+	ensure_layout_ready()
 	var rect := get_bin_rect()
 	var spawn_x := _rng.randf_range(rect.position.x + 18.0, rect.position.x + rect.size.x - 18.0)
 	_spawn_gem(spawn_x, rect)
