@@ -1,17 +1,18 @@
 # Godot 4
 .godot/
+.export-templates/
 *.import
 *.translation
 
-# Export
+# Export (keep docs/ web sandbox for GitHub Pages)
 export/
-export_presets.cfg
 *.apk
 *.aab
 *.ipa
 *.exe
-*.pck
 *.zip
+# Local-only Godot export artifacts outside docs/
+/export/
 
 # OS
 .DS_Store

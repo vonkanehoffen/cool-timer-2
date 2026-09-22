@@ -10,6 +10,40 @@ A native **Godot 4.3+** countdown timer inspired by [Cool Timer](https://github.
 
 The main scene is `scenes/main.tscn`.
 
+## Falling Gems sandbox (web + editor)
+
+A standalone tap-to-spawn version of the Falling Gems animation for iterating on visuals without the timer UI.
+
+### Open in Godot (desktop)
+
+1. Open `scenes/sandbox/falling_gems_sandbox.tscn`
+2. Press **F6** (Run Current Scene) or right-click the scene → **Run Scene**
+3. **Tap / click** anywhere to drop a gem above the bin at that X position
+
+The sandbox reuses `scenes/animations/gem.tscn` and the shared `GemsBin` physics setup (`scenes/animations/gems_bin.tscn`). Gems recycle after 100 are on screen to keep mobile web performance reasonable.
+
+### Open on your phone (web build)
+
+Pre-built HTML5 export lives in **`docs/`** for GitHub Pages.
+
+**Live URL (after Pages is enabled):** [https://vonkanehoffen.github.io/cool-timer-2/](https://vonkanehoffen.github.io/cool-timer-2/)
+
+**One-time GitHub Pages setup:**
+
+1. Repo **Settings → Pages**
+2. **Build and deployment → Source:** Deploy from a branch
+3. **Branch:** `main` (or your default branch), folder **`/docs`**
+4. Save — GitHub publishes `docs/index.html` + wasm/js/pck at the URL above
+
+Open that URL on your phone, tap the canvas if needed to focus, then tap to drop gems.
+
+### Re-export the web sandbox
+
+1. Install Godot **Web** export templates (Editor → Manage Export Templates)
+2. **Project → Export → Web Sandbox** (uses `scenes/sandbox/falling_gems_sandbox.tscn` as main scene)
+3. Export to `docs/index.html` (overwrites the committed web build)
+4. Commit and push `docs/`
+
 ## Controls
 
 | Control | Behavior |
@@ -39,7 +73,10 @@ scripts/
 │   ├── snake_trail.gd
 │   ├── snake_path.gd
 │   ├── falling_gems.gd
+│   ├── gems_bin.gd
 │   └── gem.gd
+├── sandbox/
+│   └── falling_gems_sandbox.gd
 └── ui/
     ├── main_screen.gd       # Wires UI ↔ timer ↔ animation host
     ├── time_display.gd      # Formats remaining time text
