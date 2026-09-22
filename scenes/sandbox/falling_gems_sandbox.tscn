@@ -12,13 +12,57 @@ use_object_pool = true
 max_gems = 36
 pool_size = 36
 
-[node name="CanvasLayer" type="CanvasLayer" parent="."]
+[node name="BackdropLayer" type="CanvasLayer" parent="."]
+layer = -1
 
-[node name="BinOutline" type="ReferenceRect" parent="CanvasLayer"]
-unique_name_in_owner = true
-anchors_preset = 0
-offset_right = 720.0
-offset_bottom = 1280.0
+[node name="Background" type="ColorRect" parent="BackdropLayer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
 mouse_filter = 2
-border_color = Color(0.45, 0.55, 0.72, 0.85)
-border_width = 2.0
+color = Color(0, 0, 0, 1)
+
+[node name="OverlayLayer" type="CanvasLayer" parent="."]
+layer = 10
+
+[node name="BorderTop" type="ColorRect" parent="OverlayLayer"]
+anchors_preset = 10
+anchor_right = 1.0
+offset_bottom = 14.0
+mouse_filter = 2
+color = Color(0, 1, 1, 1)
+
+[node name="BorderBottom" type="ColorRect" parent="OverlayLayer"]
+anchors_preset = 12
+anchor_top = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_top = -14.0
+mouse_filter = 2
+color = Color(0, 1, 1, 1)
+
+[node name="BorderLeft" type="ColorRect" parent="OverlayLayer"]
+anchors_preset = 4
+anchor_bottom = 1.0
+offset_right = 14.0
+mouse_filter = 2
+color = Color(0, 1, 1, 1)
+
+[node name="BorderRight" type="ColorRect" parent="OverlayLayer"]
+anchors_preset = 6
+anchor_left = 1.0
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = -14.0
+mouse_filter = 2
+color = Color(0, 1, 1, 1)
+
+[node name="InputCatcher" type="Control" parent="OverlayLayer"]
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+mouse_filter = 0

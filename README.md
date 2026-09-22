@@ -28,7 +28,7 @@ The sandbox reuses `scenes/animations/gem.tscn` and `GemsPhysicsWorld` (Node2D p
 
 The **`docs/`** folder is a **bare animation-only** HTML5 export: fullscreen black canvas, tap to drop gems, no timer UI, no Godot splash/progress chrome (minimal custom shell).
 
-**Live URL:** [https://vonkanehoffen.github.io/cool-timer-2/](https://vonkanehoffen.github.io/cool-timer-2/) → redirects to `gems5.html` (cache-busted export name; avoids stale IndexedDB from older builds).
+**Live URL:** [https://vonkanehoffen.github.io/cool-timer-2/](https://vonkanehoffen.github.io/cool-timer-2/) → redirects to `gems6.html` (cache-busted export name; avoids stale IndexedDB from older builds).
 
 GitHub Pages serves branch **`main`**, folder **`/docs`**. Fullscreen box (viewport edges). Tap to throw simple cubes into the box.
 
@@ -36,7 +36,7 @@ GitHub Pages serves branch **`main`**, folder **`/docs`**. Fullscreen box (viewp
 
 1. Install Godot **Web** export templates (Editor → Manage Export Templates)
 2. **Project → Export → Web Sandbox** (uses `scenes/sandbox/falling_gems_sandbox.tscn` as main scene)
-3. Export to `docs/gems5.html` (or bump the executable name again for cache bust; keep `docs/index.html` as redirect)
+3. Export to `docs/gems6.html` (or bump the executable name again for cache bust; keep `docs/index.html` as redirect)
 4. Commit and push `docs/`
 
 ## Controls

@@ -20,6 +20,10 @@ config/icon="res://assets/icon.svg"
 
 general/default_playback_type.web=0
 
+[input_devices]
+
+pointing/emulate_touch_from_mouse=true
+
 [display]
 
 window/size/viewport_width=720
@@ -38,5 +42,6 @@ common/physics_ticks_per_second=30
 
 [rendering]
 
+environment/defaults/default_clear_color=Color(0, 0, 0, 1)
 renderer/rendering_method="mobile"
 textures/vram_compression/import_etc2_astc=true

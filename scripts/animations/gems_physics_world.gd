@@ -52,7 +52,11 @@ func _build_pool() -> void:
 
 
 func ensure_layout_ready() -> void:
-	_playfield_size = get_viewport_rect().size
+	var vp := get_viewport()
+	if vp is SubViewport:
+		_playfield_size = Vector2(vp.size)
+	else:
+		_playfield_size = get_viewport_rect().size
 	if _playfield_size.x <= 1.0 or _playfield_size.y <= 1.0:
 		_playfield_size = Vector2(720.0, 1280.0)
 	_update_walls()

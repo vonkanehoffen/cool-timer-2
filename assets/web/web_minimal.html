@@ -136,6 +136,20 @@ const engine = new Engine(GODOT_CONFIG);
 			'onProgress': function (_current, _total) {},
 		}).then(() => {
 			setStatusMode('hidden');
+			const canvas = document.getElementById('canvas');
+			if (canvas) {
+				canvas.setAttribute('tabindex', '0');
+				const focusCanvas = () => {
+					try {
+						canvas.focus({ preventScroll: true });
+					} catch (_err) {
+						canvas.focus();
+					}
+				};
+				focusCanvas();
+				document.addEventListener('pointerdown', focusCanvas, true);
+				document.addEventListener('touchstart', focusCanvas, { capture: true, passive: true });
+			}
 		}, displayFailureNotice);
 	}
 }());

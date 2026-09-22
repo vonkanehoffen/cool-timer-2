@@ -8,17 +8,26 @@ func _initialize() -> void:
 
 
 func _run_tests() -> void:
-	var sandbox: Node2D = load("res://scenes/sandbox/falling_gems_sandbox.tscn").instantiate()
-	root.add_child(sandbox)
-	for _i in 8:
+	var sub_vp := SubViewport.new()
+	sub_vp.size = Vector2i(720, 1280)
+	sub_vp.transparent_bg = false
+	sub_vp.render_target_update_mode = SubViewport.UPDATE_ALWAYS
+	root.add_child(sub_vp)
+
+	var world: GemsPhysicsWorld = load("res://scenes/animations/gems_physics_world.tscn").instantiate()
+	world.use_full_viewport = true
+	world.use_object_pool = true
+	world.pool_size = 36
+	sub_vp.add_child(world)
+
+	for _i in 10:
 		await process_frame
 
-	var world: Node2D = sandbox.get_node("GemsPhysicsWorld")
-	world.call("ensure_layout_ready")
-	var rect: Rect2 = world.call("get_playfield_rect")
+	world.ensure_layout_ready()
+	var rect: Rect2 = world.get_playfield_rect()
 	var floor_zone_y: float = rect.position.y + rect.size.y * 0.88
 
-	world.call("throw_at_viewport", Vector2(rect.size.x * 0.5, 80.0))
+	world.throw_at_viewport(Vector2(rect.size.x * 0.5, 80.0))
 	for _i in 5:
 		await process_frame
 	var cube := _first_active(world)
@@ -46,12 +55,12 @@ func _run_tests() -> void:
 		return
 
 	for i in 20:
-		world.call("throw_at_viewport", Vector2(80.0 + float(i) * 28.0, 80.0))
+		world.throw_at_viewport(Vector2(80.0 + float(i) * 28.0, 80.0))
 		for _j in 4:
 			await process_frame
 	for _i in 120:
 		await process_frame
-	var active_count: int = world.call("get_active_cube_count")
+	var active_count: int = world.get_active_cube_count()
 	if active_count < 10:
 		push_error(
 			"physics_smoke_test FAIL: expected pile of cubes, active=%d"
@@ -61,15 +70,15 @@ func _run_tests() -> void:
 		return
 
 	for i in 100:
-		world.call("throw_at_viewport", Vector2(60.0 + float(i % 36) * 16.0, 70.0))
+		world.throw_at_viewport(Vector2(60.0 + float(i % 36) * 16.0, 70.0))
 	for _i in 200:
 		await process_frame
 
-	print("physics_smoke_test PASS active=%d floor_y=%s" % [world.call("get_active_cube_count"), cube.position.y])
+	print("physics_smoke_test PASS active=%d floor_y=%s" % [world.get_active_cube_count(), cube.position.y])
 	quit()
 
 
-func _first_active(world: Node2D) -> RigidBody2D:
+func _first_active(world: GemsPhysicsWorld) -> RigidBody2D:
 	for cube in world.get("_pool"):
 		if cube.has_method("is_pooled_active") and cube.is_pooled_active():
 			return cube

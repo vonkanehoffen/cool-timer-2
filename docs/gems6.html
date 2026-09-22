@@ -68,14 +68,14 @@ html, body {
 		</noscript>
 
 		<div id="status">
-			<img id="status-splash" src="" alt="">
+			<img id="status-splash" src="gems6.png" alt="">
 			<progress id="status-progress"></progress>
 			<div id="status-notice"></div>
 		</div>
 
-		<script src="gems5.js"></script>
+		<script src="gems6.js"></script>
 		<script>
-const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"ensureCrossOriginIsolationHeaders":true,"executable":"gems5","experimentalVK":false,"fileSizes":{"gems5.pck":16256,"gems5.wasm":35376909},"focusCanvas":true,"gdextensionLibs":[]};
+const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"ensureCrossOriginIsolationHeaders":true,"executable":"gems6","experimentalVK":false,"fileSizes":{"gems6.pck":17808,"gems6.wasm":35376909},"focusCanvas":true,"gdextensionLibs":[]};
 const GODOT_THREADS_ENABLED = false;
 const engine = new Engine(GODOT_CONFIG);
 
@@ -136,6 +136,20 @@ const engine = new Engine(GODOT_CONFIG);
 			'onProgress': function (_current, _total) {},
 		}).then(() => {
 			setStatusMode('hidden');
+			const canvas = document.getElementById('canvas');
+			if (canvas) {
+				canvas.setAttribute('tabindex', '0');
+				const focusCanvas = () => {
+					try {
+						canvas.focus({ preventScroll: true });
+					} catch (_err) {
+						canvas.focus();
+					}
+				};
+				focusCanvas();
+				document.addEventListener('pointerdown', focusCanvas, true);
+				document.addEventListener('touchstart', focusCanvas, { capture: true, passive: true });
+			}
 		}, displayFailureNotice);
 	}
 }());
