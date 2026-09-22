@@ -28,9 +28,9 @@ The sandbox reuses `scenes/animations/gem.tscn` and the shared `GemsBin` physics
 
 The **`docs/`** folder is a **bare animation-only** HTML5 export: fullscreen black canvas, tap to drop gems, no timer UI, no Godot splash/progress chrome (minimal custom shell).
 
-**Live URL:** [https://vonkanehoffen.github.io/cool-timer-2/](https://vonkanehoffen.github.io/cool-timer-2/) → redirects to `gems2.html` (cache-busted export name; avoids stale IndexedDB from older builds).
+**Live URL:** [https://vonkanehoffen.github.io/cool-timer-2/](https://vonkanehoffen.github.io/cool-timer-2/) → redirects to `gems3.html` (cache-busted export name; avoids stale IndexedDB from older builds).
 
-GitHub Pages serves branch **`main`**, folder **`/docs`**. Tap anywhere to spawn a gem.
+GitHub Pages serves branch **`main`**, folder **`/docs`**. Tap to throw a colored cube into the visible box (max 45 cubes, oldest recycled).
 
 ### Re-export the web sandbox
 

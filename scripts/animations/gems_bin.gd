@@ -1,10 +1,10 @@
 class_name GemsBin
 extends Control
 
-## Reusable gem bin with floor/walls physics. Used by the timer animation and sandbox.
+## Reusable cube bin with floor/walls physics. Used by the timer animation and sandbox.
 
 const GEM_SCENE := preload("res://scenes/animations/gem.tscn")
-const DEFAULT_MAX_GEMS := 100
+const DEFAULT_MAX_GEMS := 45
 
 @onready var bin_outline: ReferenceRect = %BinOutline
 @onready var gems_container: Node2D = %GemsContainer
@@ -16,6 +16,10 @@ const DEFAULT_MAX_GEMS := 100
 @export var edge_margin: float = 24.0
 @export var show_outline: bool = true
 @export var use_full_viewport: bool = false
+@export var centered_box: bool = false
+@export var box_width_ratio: float = 0.88
+@export var box_height_ratio: float = 0.48
+@export var box_bottom_inset_ratio: float = 0.06
 
 var _rng := RandomNumberGenerator.new()
 
@@ -28,6 +32,9 @@ func _ready() -> void:
 		bin_outline.mouse_filter = Control.MOUSE_FILTER_IGNORE
 		if not show_outline:
 			bin_outline.border_width = 0.0
+		else:
+			bin_outline.border_color = Color(0.45, 0.55, 0.72, 0.9)
+			bin_outline.border_width = 2.0
 	_ensure_collision_shapes()
 	ensure_layout_ready()
 
@@ -51,48 +58,68 @@ func get_gem_count() -> int:
 	return gems_container.get_child_count()
 
 
-func get_bin_rect() -> Rect2:
+func get_playfield_size() -> Vector2:
 	var area := size
 	if area.x <= 1.0 or area.y <= 1.0:
 		area = get_viewport_rect().size
+	return area
+
+
+func get_bin_rect() -> Rect2:
+	var area := get_playfield_size()
+	if centered_box:
+		var box_width := area.x * box_width_ratio
+		var box_height := area.y * box_height_ratio
+		var origin_x := (area.x - box_width) * 0.5
+		var origin_y := area.y * (1.0 - box_bottom_inset_ratio) - box_height
+		return Rect2(Vector2(origin_x, origin_y), Vector2(box_width, box_height))
 	if use_full_viewport:
 		return Rect2(Vector2.ZERO, area)
 	var margin := Vector2(edge_margin, edge_margin)
-	var rect := Rect2(margin, size - margin * 2.0)
+	var rect := Rect2(margin, area - margin * 2.0)
 	rect.size.y = minf(rect.size.y, rect.size.x * 1.2)
 	return rect
 
 
+func throw_cube_at_local(local_pos: Vector2) -> void:
+	ensure_layout_ready()
+	var rect := get_bin_rect()
+	var target := rect.get_center()
+	var spawn_x := clampf(local_pos.x, rect.position.x + 14.0, rect.position.x + rect.size.x - 14.0)
+	var spawn_y := clampf(local_pos.y, -48.0, rect.position.y - 12.0)
+	_spawn_cube(Vector2(spawn_x, spawn_y), target)
+
+
 func spawn_at_viewport_position(viewport_pos: Vector2) -> void:
 	ensure_layout_ready()
-	var local_x := make_canvas_position_local(viewport_pos).x
-	spawn_at_canvas_x(local_x)
+	throw_cube_at_local(make_canvas_position_local(viewport_pos))
 
 
 func spawn_at_canvas_x(canvas_x: float) -> void:
 	ensure_layout_ready()
 	var rect := get_bin_rect()
-	var spawn_x := clampf(canvas_x, rect.position.x + 18.0, rect.position.x + rect.size.x - 18.0)
-	_spawn_gem(spawn_x, rect)
+	throw_cube_at_local(Vector2(canvas_x, rect.position.y - 24.0))
 
 
 func spawn_random_in_bin() -> void:
 	ensure_layout_ready()
 	var rect := get_bin_rect()
 	var spawn_x := _rng.randf_range(rect.position.x + 18.0, rect.position.x + rect.size.x - 18.0)
-	_spawn_gem(spawn_x, rect)
+	_spawn_cube(Vector2(spawn_x, rect.position.y - 24.0), rect.get_center())
 
 
-func _spawn_gem(spawn_x: float, bin_rect: Rect2) -> void:
+func _spawn_cube(spawn_pos: Vector2, target: Vector2) -> void:
 	_enforce_cap()
 	var gem: RigidBody2D = GEM_SCENE.instantiate()
 	gems_container.add_child(gem)
-	var spawn_y := bin_rect.position.y - 20.0 - _rng.randf_range(0.0, 80.0)
-	if use_full_viewport:
-		spawn_y = minf(spawn_y, -16.0 - _rng.randf_range(0.0, 40.0))
-	gem.position = Vector2(spawn_x, spawn_y)
-	gem.apply_central_impulse(Vector2(_rng.randf_range(-40.0, 40.0), _rng.randf_range(20.0, 120.0)))
-	gem.angular_velocity = _rng.randf_range(-4.0, 4.0)
+	gem.position = spawn_pos
+	var to_target := target - spawn_pos
+	if to_target.length_squared() < 1.0:
+		to_target = Vector2(0.0, 1.0)
+	var impulse := to_target.normalized() * _rng.randf_range(120.0, 200.0)
+	impulse.y += _rng.randf_range(40.0, 100.0)
+	gem.apply_central_impulse(impulse)
+	gem.angular_velocity = _rng.randf_range(-2.0, 2.0)
 	if gem.has_method("randomize_appearance"):
 		gem.call("randomize_appearance", _rng)
 

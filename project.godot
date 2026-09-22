@@ -30,6 +30,12 @@ window/stretch/mode="canvas_items"
 window/stretch/aspect="expand"
 window/handheld/orientation=1
 
+[physics]
+
+2d/sleep_threshold_linear=4.0
+2d/sleep_threshold_angular=0.35
+common/physics_ticks_per_second=30
+
 [rendering]
 
 renderer/rendering_method="mobile"
