@@ -1,7 +1,7 @@
 [gd_scene load_steps=3 format=3 uid="uid://fallinggems001"]
 
 [ext_resource type="Script" path="res://scripts/animations/falling_gems.gd" id="1"]
-[ext_resource type="PackedScene" uid="uid://gemsbin00001" path="res://scenes/animations/gems_bin.tscn" id="2"]
+[ext_resource type="PackedScene" uid="uid://gemsphysicsworld" path="res://scenes/animations/gems_physics_world.tscn" id="2"]
 
 [node name="FallingGems" type="Control"]
 layout_mode = 3
@@ -12,14 +12,8 @@ grow_horizontal = 2
 grow_vertical = 2
 script = ExtResource("1")
 
-[node name="GemsBin" parent="." instance=ExtResource("2")]
+[node name="GemsPhysicsWorld" parent="." instance=ExtResource("2")]
 unique_name_in_owner = true
-layout_mode = 1
-anchors_preset = 15
-anchor_right = 1.0
-anchor_bottom = 1.0
-grow_horizontal = 2
-grow_vertical = 2
 max_gems = 120
 
 [node name="CompleteFlash" type="ColorRect" parent="."]
@@ -31,4 +25,5 @@ anchor_right = 1.0
 anchor_bottom = 1.0
 grow_horizontal = 2
 grow_vertical = 2
+mouse_filter = 2
 color = Color(0.98, 0.75, 0.25, 0.18)

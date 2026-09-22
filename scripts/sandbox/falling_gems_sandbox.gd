@@ -1,14 +1,15 @@
-extends Control
+extends Node2D
 
-@onready var gems_bin: GemsBin = %GemsBin
+@onready var physics_world: GemsPhysicsWorld = $GemsPhysicsWorld
+@onready var bin_outline: ReferenceRect = %BinOutline
 
 
 func _ready() -> void:
-	mouse_filter = Control.MOUSE_FILTER_STOP
-	gems_bin.ensure_layout_ready()
+	physics_world.ensure_layout_ready()
+	_sync_outline()
 
 
-func _gui_input(event: InputEvent) -> void:
+func _input(event: InputEvent) -> void:
 	var tap_pos := Vector2.INF
 	if event is InputEventScreenTouch:
 		var touch := event as InputEventScreenTouch
@@ -20,7 +21,17 @@ func _gui_input(event: InputEvent) -> void:
 			tap_pos = click.position
 	if tap_pos == Vector2.INF:
 		return
-	gems_bin.ensure_layout_ready()
-	var local_pos := make_canvas_position_local(tap_pos)
-	gems_bin.throw_cube_at_local(local_pos)
-	accept_event()
+	get_viewport().set_input_as_handled()
+	physics_world.throw_at_viewport(tap_pos)
+
+
+func _sync_outline() -> void:
+	var rect := physics_world.get_playfield_rect()
+	bin_outline.position = rect.position
+	bin_outline.size = rect.size
+
+
+func _notification(what: int) -> void:
+	if what == NOTIFICATION_WM_SIZE_CHANGED and is_node_ready():
+		physics_world.ensure_layout_ready()
+		_sync_outline()

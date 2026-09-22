@@ -22,21 +22,21 @@ A standalone tap-to-spawn version of the Falling Gems animation for iterating on
 2. Press **F6** (Run Current Scene) or right-click the scene → **Run Scene**
 3. **Tap / click** anywhere to drop a gem above the bin at that X position
 
-The sandbox reuses `scenes/animations/gem.tscn` and the shared `GemsBin` physics setup (`scenes/animations/gems_bin.tscn`). Gems recycle after 100 are on screen to keep mobile web performance reasonable.
+The sandbox reuses `scenes/animations/gem.tscn` and `GemsPhysicsWorld` (Node2D physics — bodies are never parented under Control). 36 pooled cubes recycle without instantiate/free thrash.
 
 ### Open on your phone (web build)
 
 The **`docs/`** folder is a **bare animation-only** HTML5 export: fullscreen black canvas, tap to drop gems, no timer UI, no Godot splash/progress chrome (minimal custom shell).
 
-**Live URL:** [https://vonkanehoffen.github.io/cool-timer-2/](https://vonkanehoffen.github.io/cool-timer-2/) → redirects to `gems4.html` (cache-busted export name; avoids stale IndexedDB from older builds).
+**Live URL:** [https://vonkanehoffen.github.io/cool-timer-2/](https://vonkanehoffen.github.io/cool-timer-2/) → redirects to `gems5.html` (cache-busted export name; avoids stale IndexedDB from older builds).
 
-GitHub Pages serves branch **`main`**, folder **`/docs`**. Fullscreen box (viewport edges). Tap to throw cubes — 36 pooled bodies, round-robin reuse (no instantiate/free thrash).
+GitHub Pages serves branch **`main`**, folder **`/docs`**. Fullscreen box (viewport edges). Tap to throw simple cubes into the box.
 
 ### Re-export the web sandbox
 
 1. Install Godot **Web** export templates (Editor → Manage Export Templates)
 2. **Project → Export → Web Sandbox** (uses `scenes/sandbox/falling_gems_sandbox.tscn` as main scene)
-3. Export to `docs/gems4.html` (or bump the executable name again for cache bust; keep `docs/index.html` as redirect)
+3. Export to `docs/gems5.html` (or bump the executable name again for cache bust; keep `docs/index.html` as redirect)
 4. Commit and push `docs/`
 
 ## Controls
@@ -68,7 +68,7 @@ scripts/
 │   ├── snake_trail.gd
 │   ├── snake_path.gd
 │   ├── falling_gems.gd
-│   ├── gems_bin.gd
+│   ├── gems_physics_world.gd
 │   └── gem.gd
 ├── sandbox/
 │   └── falling_gems_sandbox.gd
