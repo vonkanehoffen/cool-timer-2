@@ -6,9 +6,11 @@ A native **Godot 4.3+** countdown timer inspired by [Cool Timer](https://github.
 
 1. Install [Godot 4.3 or newer](https://godotengine.org/download).
 2. Clone this repository and open the project folder in Godot (**Project → Import** or open `project.godot`).
-3. Press **F5** (or click **Run Project**) to play.
+3. **F5** runs the Falling Gems sandbox (same as the web build).
 
-The main scene is `scenes/main.tscn`.
+### Full Cool Timer (desktop)
+
+Open `scenes/main.tscn` and press **F6** (Run Current Scene) for the countdown timer with all animations.
 
 ## Falling Gems sandbox (web + editor)
 
@@ -26,15 +28,15 @@ The sandbox reuses `scenes/animations/gem.tscn` and the shared `GemsBin` physics
 
 The **`docs/`** folder is a **bare animation-only** HTML5 export: fullscreen black canvas, tap to drop gems, no timer UI, no Godot splash/progress chrome (minimal custom shell).
 
-**Live URL:** [https://vonkanehoffen.github.io/cool-timer-2/](https://vonkanehoffen.github.io/cool-timer-2/)
+**Live URL:** [https://vonkanehoffen.github.io/cool-timer-2/](https://vonkanehoffen.github.io/cool-timer-2/) → redirects to `gems.html` (cache-busted export name; avoids stale IndexedDB from old `index.*` builds).
 
-GitHub Pages should serve from branch **`main`**, folder **`/docs`**. Tap anywhere to spawn a gem.
+GitHub Pages serves branch **`main`**, folder **`/docs`**. Tap anywhere to spawn a gem.
 
 ### Re-export the web sandbox
 
 1. Install Godot **Web** export templates (Editor → Manage Export Templates)
 2. **Project → Export → Web Sandbox** (uses `scenes/sandbox/falling_gems_sandbox.tscn` as main scene)
-3. Export to `docs/index.html` (overwrites the committed web build)
+3. Export to `docs/gems.html` (overwrites the committed web build; keep `docs/index.html` as redirect)
 4. Commit and push `docs/`
 
 ## Controls
