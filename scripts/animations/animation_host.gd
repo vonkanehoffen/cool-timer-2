@@ -28,23 +28,37 @@ func set_animation(animation_id: String) -> void:
 		return
 	_active_animation = scene.instantiate()
 	add_child(_active_animation)
-	if _active_animation is AnimationBase:
-		(_active_animation as AnimationBase).on_animation_mounted()
-	if _last_props != null:
-		_push_props(_last_props)
 	animation_changed.emit(current_animation_id)
+	_when_animation_ready(_run_mount_and_sync)
 
 
 func apply_props(props: AnimationProps) -> void:
 	_last_props = props
-	_push_props(props)
+	_when_animation_ready(_sync_props)
 
 
-func _push_props(props: AnimationProps) -> void:
-	if _active_animation == null:
+func _when_animation_ready(callback: Callable) -> void:
+	if _active_animation == null or not is_instance_valid(_active_animation):
+		return
+	if _active_animation.is_node_ready():
+		callback.call()
+	else:
+		_active_animation.ready.connect(callback, CONNECT_ONE_SHOT)
+
+
+func _run_mount_and_sync() -> void:
+	if _active_animation == null or not is_instance_valid(_active_animation):
+		return
+	if _active_animation is AnimationBase:
+		(_active_animation as AnimationBase).on_animation_mounted()
+	_sync_props()
+
+
+func _sync_props() -> void:
+	if _active_animation == null or _last_props == null:
 		return
 	if _active_animation.has_method("apply_animation_props"):
-		_active_animation.call("apply_animation_props", props)
+		_active_animation.call("apply_animation_props", _last_props)
 
 
 func _clear_active() -> void:

@@ -20,6 +20,8 @@ func on_animation_mounted() -> void:
 
 
 func apply_animation_props(props: AnimationProps) -> void:
+	if not is_node_ready():
+		return
 	if absf(props.progress - _last_progress) < 0.0001 and props.status != TimerConstants.STATUS_IDLE:
 		if props.status != TimerConstants.STATUS_COMPLETED:
 			return
@@ -43,7 +45,7 @@ func apply_animation_props(props: AnimationProps) -> void:
 
 
 func _notification(what: int) -> void:
-	if what == NOTIFICATION_RESIZED:
+	if what == NOTIFICATION_RESIZED and is_node_ready():
 		_rebuild_path()
 
 
@@ -53,6 +55,8 @@ func _rebuild_path() -> void:
 
 
 func _update_layout() -> void:
+	if not is_node_ready() or grid_background == null:
+		return
 	if size.x <= 0.0 or size.y <= 0.0:
 		return
 	var usable := size - Vector2(24, 24)

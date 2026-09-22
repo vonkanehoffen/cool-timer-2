@@ -14,20 +14,30 @@ var _spawned_count := 0
 var _rng := RandomNumberGenerator.new()
 
 
-func on_animation_mounted() -> void:
+func _ready() -> void:
 	_rng.randomize()
 	_ensure_collision_shapes()
+	_update_bin_layout()
+
+
+func on_animation_mounted() -> void:
 	_reset_gems()
 
 
 func _ensure_collision_shapes() -> void:
+	if not is_node_ready():
+		return
 	for wall in [left_wall, right_wall, floor_body]:
+		if wall == null:
+			continue
 		var shape_node: CollisionShape2D = wall.get_node("CollisionShape2D")
 		if shape_node.shape == null:
 			shape_node.shape = RectangleShape2D.new()
 
 
 func apply_animation_props(props: AnimationProps) -> void:
+	if not is_node_ready():
+		return
 	_update_bin_layout()
 	var target_count := 0
 	match props.status:
@@ -69,6 +79,8 @@ func _spawn_gem() -> void:
 
 
 func _update_bin_layout() -> void:
+	if not is_node_ready() or bin_outline == null or floor_body == null:
+		return
 	var rect := _get_bin_rect()
 	bin_outline.position = rect.position
 	bin_outline.size = rect.size
@@ -94,5 +106,5 @@ func _get_bin_rect() -> Rect2:
 
 
 func _notification(what: int) -> void:
-	if what == NOTIFICATION_RESIZED:
+	if what == NOTIFICATION_RESIZED and is_node_ready():
 		_update_bin_layout()
