@@ -1,0 +1,195 @@
+[gd_scene load_steps=5 format=3 uid="uid://cooltimer_main"]
+
+[ext_resource type="Script" path="res://scripts/ui/main_screen.gd" id="1"]
+[ext_resource type="Script" path="res://scripts/animations/animation_host.gd" id="2"]
+[ext_resource type="Theme" path="res://assets/theme/game_theme.tres" id="3"]
+[ext_resource type="Script" path="res://scripts/ui/chime_player.gd" id="4"]
+
+[node name="Main" type="Control"]
+layout_mode = 3
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+theme = ExtResource("3")
+script = ExtResource("1")
+
+[node name="Background" type="ColorRect" parent="."]
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+grow_horizontal = 2
+grow_vertical = 2
+color = Color(0.06, 0.08, 0.12, 1)
+
+[node name="LayoutRoot" type="BoxContainer" parent="."]
+unique_name_in_owner = true
+layout_mode = 1
+anchors_preset = 15
+anchor_right = 1.0
+anchor_bottom = 1.0
+offset_left = 16.0
+offset_top = 16.0
+offset_right = -16.0
+offset_bottom = -16.0
+grow_horizontal = 2
+grow_vertical = 2
+theme_override_constants/separation = 16
+
+[node name="StagePanel" type="PanelContainer" parent="LayoutRoot"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+size_flags_stretch_ratio = 1.0
+
+[node name="StageVBox" type="VBoxContainer" parent="LayoutRoot/StagePanel"]
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 8
+
+[node name="StageTitle" type="Label" parent="LayoutRoot/StagePanel/StageVBox"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.55, 0.95, 0.86, 1)
+theme_override_font_sizes/font_size = 14
+text = "Animation Stage"
+horizontal_alignment = 1
+
+[node name="AnimationHost" type="Control" parent="LayoutRoot/StagePanel/StageVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+custom_minimum_size = Vector2(280, 360)
+script = ExtResource("2")
+
+[node name="ControlsPanel" type="VBoxContainer" parent="LayoutRoot"]
+unique_name_in_owner = true
+layout_mode = 2
+size_flags_horizontal = 3
+size_flags_vertical = 3
+theme_override_constants/separation = 12
+
+[node name="Title" type="Label" parent="LayoutRoot/ControlsPanel"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.92, 0.96, 1, 1)
+theme_override_font_sizes/font_size = 32
+text = "Cool Timer"
+horizontal_alignment = 1
+
+[node name="Subtitle" type="Label" parent="LayoutRoot/ControlsPanel"]
+layout_mode = 2
+theme_override_colors/font_color = Color(0.62, 0.7, 0.82, 1)
+theme_override_font_sizes/font_size = 14
+text = "Game-style countdown with swappable visuals"
+horizontal_alignment = 1
+autowrap_mode = 2
+
+[node name="TimeLabel" type="Label" parent="LayoutRoot/ControlsPanel"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(0.92, 0.96, 1, 1)
+theme_override_font_sizes/font_size = 56
+text = "5:00"
+horizontal_alignment = 1
+
+[node name="StatusLabel" type="Label" parent="LayoutRoot/ControlsPanel"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_font_sizes/font_size = 20
+text = "Ready"
+horizontal_alignment = 1
+
+[node name="DurationPanel" type="PanelContainer" parent="LayoutRoot/ControlsPanel"]
+layout_mode = 2
+
+[node name="DurationVBox" type="VBoxContainer" parent="LayoutRoot/ControlsPanel/DurationPanel"]
+layout_mode = 2
+theme_override_constants/separation = 8
+
+[node name="DurationLabel" type="Label" parent="LayoutRoot/ControlsPanel/DurationPanel/DurationVBox"]
+layout_mode = 2
+text = "Duration (H : M : S)"
+
+[node name="DurationInputs" type="HBoxContainer" parent="LayoutRoot/ControlsPanel/DurationPanel/DurationVBox"]
+layout_mode = 2
+alignment = 1
+theme_override_constants/separation = 8
+
+[node name="HoursSpin" type="SpinBox" parent="LayoutRoot/ControlsPanel/DurationPanel/DurationVBox/DurationInputs"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(80, 0)
+max_value = 23.0
+value = 0.0
+
+[node name="Colon1" type="Label" parent="LayoutRoot/ControlsPanel/DurationPanel/DurationVBox/DurationInputs"]
+layout_mode = 2
+text = ":"
+
+[node name="MinutesSpin" type="SpinBox" parent="LayoutRoot/ControlsPanel/DurationPanel/DurationVBox/DurationInputs"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(80, 0)
+max_value = 59.0
+value = 5.0
+
+[node name="Colon2" type="Label" parent="LayoutRoot/ControlsPanel/DurationPanel/DurationVBox/DurationInputs"]
+layout_mode = 2
+text = ":"
+
+[node name="SecondsSpin" type="SpinBox" parent="LayoutRoot/ControlsPanel/DurationPanel/DurationVBox/DurationInputs"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(80, 0)
+max_value = 59.0
+min_value = 0.0
+value = 0.0
+
+[node name="DurationFeedback" type="Label" parent="LayoutRoot/ControlsPanel/DurationPanel/DurationVBox"]
+unique_name_in_owner = true
+layout_mode = 2
+theme_override_colors/font_color = Color(1, 0.55, 0.55, 1)
+theme_override_font_sizes/font_size = 13
+horizontal_alignment = 1
+
+[node name="ControlsRow" type="HBoxContainer" parent="LayoutRoot/ControlsPanel"]
+layout_mode = 2
+theme_override_constants/separation = 12
+alignment = 1
+
+[node name="StartButton" type="Button" parent="LayoutRoot/ControlsPanel/ControlsRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(140, 48)
+text = "Start"
+
+[node name="ResetButton" type="Button" parent="LayoutRoot/ControlsPanel/ControlsRow"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(100, 48)
+text = "Reset"
+
+[node name="AnimationPanel" type="PanelContainer" parent="LayoutRoot/ControlsPanel"]
+layout_mode = 2
+
+[node name="AnimationVBox" type="VBoxContainer" parent="LayoutRoot/ControlsPanel/AnimationPanel"]
+layout_mode = 2
+theme_override_constants/separation = 6
+
+[node name="AnimationLabel" type="Label" parent="LayoutRoot/ControlsPanel/AnimationPanel/AnimationVBox"]
+layout_mode = 2
+text = "Animation"
+
+[node name="AnimationOption" type="OptionButton" parent="LayoutRoot/ControlsPanel/AnimationPanel/AnimationVBox"]
+unique_name_in_owner = true
+custom_minimum_size = Vector2(0, 40)
+
+[node name="ChimePlayer" type="AudioStreamPlayer" parent="."]
+unique_name_in_owner = true
+script = ExtResource("4")
+
+[connection signal="value_changed" from="LayoutRoot/ControlsPanel/DurationPanel/DurationVBox/DurationInputs/HoursSpin" to="." method="_on_hours_spin_value_changed"]
+[connection signal="value_changed" from="LayoutRoot/ControlsPanel/DurationPanel/DurationVBox/DurationInputs/MinutesSpin" to="." method="_on_minutes_spin_value_changed"]
+[connection signal="value_changed" from="LayoutRoot/ControlsPanel/DurationPanel/DurationVBox/DurationInputs/SecondsSpin" to="." method="_on_seconds_spin_value_changed"]
+[connection signal="pressed" from="LayoutRoot/ControlsPanel/ControlsRow/StartButton" to="." method="_on_start_button_pressed"]
+[connection signal="pressed" from="LayoutRoot/ControlsPanel/ControlsRow/ResetButton" to="." method="_on_reset_button_pressed"]
+[connection signal="item_selected" from="LayoutRoot/ControlsPanel/AnimationPanel/AnimationVBox/AnimationOption" to="." method="_on_animation_option_item_selected"]
