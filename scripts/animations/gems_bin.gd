@@ -1,10 +1,11 @@
 class_name GemsBin
 extends Control
 
-## Reusable cube bin with floor/walls physics. Used by the timer animation and sandbox.
+## Cube bin with floor/walls. Supports object pooling for the web sandbox.
 
 const GEM_SCENE := preload("res://scenes/animations/gem.tscn")
-const DEFAULT_MAX_GEMS := 45
+const DEFAULT_MAX_GEMS := 36
+const DEFAULT_POOL_SIZE := 36
 
 @onready var bin_outline: ReferenceRect = %BinOutline
 @onready var gems_container: Node2D = %GemsContainer
@@ -16,12 +17,12 @@ const DEFAULT_MAX_GEMS := 45
 @export var edge_margin: float = 24.0
 @export var show_outline: bool = true
 @export var use_full_viewport: bool = false
-@export var centered_box: bool = false
-@export var box_width_ratio: float = 0.88
-@export var box_height_ratio: float = 0.48
-@export var box_bottom_inset_ratio: float = 0.06
+@export var use_object_pool: bool = false
+@export var pool_size: int = DEFAULT_POOL_SIZE
 
 var _rng := RandomNumberGenerator.new()
+var _pool: Array[RigidBody2D] = []
+var _pool_cursor: int = 0
 
 
 func _ready() -> void:
@@ -30,13 +31,26 @@ func _ready() -> void:
 	if bin_outline != null:
 		bin_outline.visible = show_outline
 		bin_outline.mouse_filter = Control.MOUSE_FILTER_IGNORE
-		if not show_outline:
-			bin_outline.border_width = 0.0
-		else:
-			bin_outline.border_color = Color(0.45, 0.55, 0.72, 0.9)
+		if show_outline:
+			bin_outline.border_color = Color(0.45, 0.55, 0.72, 0.85)
 			bin_outline.border_width = 2.0
+		else:
+			bin_outline.border_width = 0.0
 	_ensure_collision_shapes()
+	if use_object_pool:
+		_build_pool()
 	ensure_layout_ready()
+
+
+func _build_pool() -> void:
+	var count := maxi(pool_size, max_gems)
+	for _i in count:
+		var gem: RigidBody2D = GEM_SCENE.instantiate()
+		gems_container.add_child(gem)
+		if gem.has_method("deactivate"):
+			gem.call("deactivate")
+		_pool.append(gem)
+	_pool_cursor = 0
 
 
 func ensure_layout_ready() -> void:
@@ -50,11 +64,19 @@ func ensure_layout_ready() -> void:
 
 
 func clear_gems() -> void:
-	for child in gems_container.get_children():
-		child.queue_free()
+	if use_object_pool:
+		for cube in _pool:
+			if cube.has_method("deactivate"):
+				cube.call("deactivate")
+		_pool_cursor = 0
+	else:
+		for child in gems_container.get_children():
+			child.queue_free()
 
 
 func get_gem_count() -> int:
+	if use_object_pool:
+		return mini(_pool_cursor, _pool.size())
 	return gems_container.get_child_count()
 
 
@@ -67,12 +89,6 @@ func get_playfield_size() -> Vector2:
 
 func get_bin_rect() -> Rect2:
 	var area := get_playfield_size()
-	if centered_box:
-		var box_width := area.x * box_width_ratio
-		var box_height := area.y * box_height_ratio
-		var origin_x := (area.x - box_width) * 0.5
-		var origin_y := area.y * (1.0 - box_bottom_inset_ratio) - box_height
-		return Rect2(Vector2(origin_x, origin_y), Vector2(box_width, box_height))
 	if use_full_viewport:
 		return Rect2(Vector2.ZERO, area)
 	var margin := Vector2(edge_margin, edge_margin)
@@ -84,10 +100,10 @@ func get_bin_rect() -> Rect2:
 func throw_cube_at_local(local_pos: Vector2) -> void:
 	ensure_layout_ready()
 	var rect := get_bin_rect()
-	var target := rect.get_center()
 	var spawn_x := clampf(local_pos.x, rect.position.x + 14.0, rect.position.x + rect.size.x - 14.0)
-	var spawn_y := clampf(local_pos.y, -48.0, rect.position.y - 12.0)
-	_spawn_cube(Vector2(spawn_x, spawn_y), target)
+	var spawn_y := rect.position.y + 20.0
+	var target := Vector2(rect.get_center().x, rect.position.y + rect.size.y * 0.65)
+	_launch_cube(Vector2(spawn_x, spawn_y), target)
 
 
 func spawn_at_viewport_position(viewport_pos: Vector2) -> void:
@@ -98,36 +114,48 @@ func spawn_at_viewport_position(viewport_pos: Vector2) -> void:
 func spawn_at_canvas_x(canvas_x: float) -> void:
 	ensure_layout_ready()
 	var rect := get_bin_rect()
-	throw_cube_at_local(Vector2(canvas_x, rect.position.y - 24.0))
+	throw_cube_at_local(Vector2(canvas_x, rect.position.y + 20.0))
 
 
 func spawn_random_in_bin() -> void:
 	ensure_layout_ready()
 	var rect := get_bin_rect()
 	var spawn_x := _rng.randf_range(rect.position.x + 18.0, rect.position.x + rect.size.x - 18.0)
-	_spawn_cube(Vector2(spawn_x, rect.position.y - 24.0), rect.get_center())
+	var target := Vector2(rect.get_center().x, rect.position.y + rect.size.y * 0.65)
+	_launch_cube(Vector2(spawn_x, rect.position.y + 20.0), target)
 
 
-func _spawn_cube(spawn_pos: Vector2, target: Vector2) -> void:
-	_enforce_cap()
-	var gem: RigidBody2D = GEM_SCENE.instantiate()
-	gems_container.add_child(gem)
-	gem.position = spawn_pos
+func _launch_cube(spawn_pos: Vector2, target: Vector2) -> void:
 	var to_target := target - spawn_pos
 	if to_target.length_squared() < 1.0:
 		to_target = Vector2(0.0, 1.0)
-	var impulse := to_target.normalized() * _rng.randf_range(120.0, 200.0)
-	impulse.y += _rng.randf_range(40.0, 100.0)
-	gem.apply_central_impulse(impulse)
-	gem.angular_velocity = _rng.randf_range(-2.0, 2.0)
-	if gem.has_method("randomize_appearance"):
-		gem.call("randomize_appearance", _rng)
+	var impulse := to_target.normalized() * _rng.randf_range(100.0, 170.0)
+	impulse.y += _rng.randf_range(30.0, 80.0)
+	if use_object_pool:
+		_launch_pooled(spawn_pos, impulse)
+	else:
+		_launch_instant(spawn_pos, impulse)
 
 
-func _enforce_cap() -> void:
+func _launch_pooled(spawn_pos: Vector2, impulse: Vector2) -> void:
+	if _pool.is_empty():
+		return
+	var cube := _pool[_pool_cursor % _pool.size()]
+	_pool_cursor += 1
+	if cube.has_method("activate_at"):
+		cube.call("activate_at", spawn_pos, impulse, _rng)
+
+
+func _launch_instant(spawn_pos: Vector2, impulse: Vector2) -> void:
 	while gems_container.get_child_count() >= max_gems:
-		var oldest := gems_container.get_child(0)
-		oldest.queue_free()
+		gems_container.get_child(0).queue_free()
+	var gem: RigidBody2D = GEM_SCENE.instantiate()
+	gems_container.add_child(gem)
+	if gem.has_method("activate_at"):
+		gem.call("activate_at", spawn_pos, impulse, _rng)
+	else:
+		gem.position = spawn_pos
+		gem.apply_central_impulse(impulse)
 
 
 func _ensure_collision_shapes() -> void:
@@ -163,4 +191,4 @@ func _update_bin_layout() -> void:
 
 func _notification(what: int) -> void:
 	if what == NOTIFICATION_RESIZED and is_node_ready():
-		_update_bin_layout()
+		ensure_layout_ready()
