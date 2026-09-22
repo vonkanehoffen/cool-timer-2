@@ -1,0 +1,25 @@
+# Godot 4
+.godot/
+.export-templates/
+*.import
+*.translation
+
+# Export (keep docs/ web sandbox for GitHub Pages)
+export/
+*.apk
+*.aab
+*.ipa
+*.exe
+*.zip
+# Local-only Godot export artifacts outside docs/
+/export/
+
+# OS
+.DS_Store
+Thumbs.db
+*.swp
+*~
+
+# IDE
+.vscode/
+.idea/
